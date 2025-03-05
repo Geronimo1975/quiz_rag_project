@@ -123,34 +123,6 @@ Step 6: Create requirements.txt
 pip freeze > requirements.txt
 
 
-
-
-Next, let's temporarily modify the URLs to avoid import errors:
-
-```python
-from django.contrib import admin
-from django.urls import path, include
-from django.conf import settings
-from django.conf.urls.static import static
-from django.shortcuts import render
-
-def home(request):
-    return render(request, 'home.html')
-
-urlpatterns = [
-    path('', home, name='home'),
-    path('admin/', admin.site.urls),
-    # Temporarily comment out to avoid import errors
-    # path('accounts/', include('accounts.urls')),
-    # path('quiz/', include('quiz.urls')),
-    # path('rag/', include('rag.urls')),
-]
-
-# Serve media files in development
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-```
-
 Now create a superuser and start the development server:
 
 ```bash
