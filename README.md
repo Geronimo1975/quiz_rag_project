@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 Setting Up Python Quiz with Django, RAG, OpenAI, and PostgreSQL
 Let's build this step-by-step. I'll provide terminal commands and explanations for each stage.
 
@@ -255,3 +256,6 @@ Once the admin interface is working, we'll implement these features:
    - Provide additional learning resources
 
 Let me know when you've fixed the admin interface and are ready to implement these features!
+=======
+# quiz_rag_project
+>>>>>>> dde708721daf7cad34f4dc44fe317f7ebc02d152
