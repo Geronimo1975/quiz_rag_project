@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+
+{% block title %}Teacher Dashboard{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="mb-4">Teacher Dashboard</h1>
+    
+    <div class="row mb-4">
+        <div class="col">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="h4 mb-0">Quick Actions</h2>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex gap-3">
+                        <a href="{% url 'teacher_dashboard:upload_document' %}" class="btn btn-primary">
+                            <i class="bi bi-upload"></i> Upload Document
+                        </a>
+                        <a href="{% url 'teacher_dashboard:generate_quiz' %}" class="btn btn-success">
+                            <i class="bi bi-magic"></i> Generate Quiz
+                        </a>
+                        <a href="{% url 'teacher_dashboard:manage_topics' %}" class="btn btn-info">
+                            <i class="bi bi-folder"></i> Manage Topics
+                        </a>
+                        <a href="{% url 'teacher_dashboard:manage_quizzes' %}" class="btn btn-warning">
+                            <i class="bi bi-list-check"></i> View Quizzes
+                        </a>
+                        <a href="{% url 'admin:index' %}" class="btn btn-secondary">
+                            <i class="bi bi-gear"></i> Admin Panel
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h3 class="display-4">{{ total_documents }}</h3>
+                    <p class="card-text">Documents</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h3 class="display-4">{{ total_questions }}</h3>
+                    <p class="card-text">Questions</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h3 class="display-4">{{ active_topics }}</h3>
+                    <p class="card-text">Topics</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h3 class="display-4">{{ total_answers }}</h3>
+                    <p class="card-text">Answer Options</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h2 class="h4 mb-0">Topics</h2>
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Topic</th>
+                                <th>Questions</th>
+                                <th>Sessions</th>
+                                <th>Avg. Score</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for stat in topic_stats %}
+                            <tr>
+                                <td>{{ stat.topic.name }}</td>
+                                <td>{{ stat.questions }}</td>
+                                <td>{{ stat.sessions }}</td>
+                                <td>{{ stat.avg_score|floatformat:1 }}%</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4">No topics found</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h2 class="h4 mb-0">Recent Documents</h2>
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Topic</th>
+                                <th>Uploaded</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for doc in documents|slice:":5" %}
+                            <tr>
+                                <td>{{ doc.title }}</td>
+                                <td>{{ doc.topic }}</td>
+                                <td>{{ doc.uploaded_at|date:"M d, Y" }}</td>
+                                <td>
+                                    <a href="{% url 'teacher_dashboard:view_document' doc.id %}" class="btn btn-sm btn-info">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4">No documents uploaded yet</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Recent Quiz Sessions -->
+            <div class="card mt-4">
+                <div class="card-header bg-info text-white">
+                    <h2 class="h4 mb-0">Recent Quiz Sessions</h2>
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th>Topic</th>
+                                <th>Score</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for session in recent_sessions %}
+                            <tr>
+                                <td>{{ session.user.username }}</td>
+                                <td>{{ session.topic.name }}</td>
+                                <td>{{ session.score|floatformat:1 }}%</td>
+                                <td>{{ session.start_time|date:"M d, Y" }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4">No quiz sessions yet</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

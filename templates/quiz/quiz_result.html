@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+
+{% block title %}Quiz Results{% endblock %}
+
+{% block extra_css %}
+<style>
+    .score-container {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+    
+    .score-circle {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1rem;
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: white;
+    }
+    
+    .score-high {
+        background-color: #28a745;
+        box-shadow: 0 0 15px rgba(40, 167, 69, 0.4);
+    }
+    
+    .score-medium {
+        background-color: #ffc107;
+        box-shadow: 0 0 15px rgba(255, 193, 7, 0.4);
+    }
+    
+    .score-low {
+        background-color: #dc3545;
+        box-shadow: 0 0 15px rgba(220, 53, 69, 0.4);
+    }
+    
+    .question-card {
+        margin-bottom: 1.5rem;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    
+    .answer-item {
+        padding: 10px 15px;
+        margin-bottom: 8px;
+        border-radius: 4px;
+    }
+    
+    .answer-correct {
+        background-color: rgba(40, 167, 69, 0.2);
+        border: 1px solid rgba(40, 167, 69, 0.3);
+    }
+    
+    .answer-incorrect {
+        background-color: rgba(220, 53, 69, 0.2);
+        border: 1px solid rgba(220, 53, 69, 0.3);
+    }
+    
+    .answer-neutral {
+        background-color: #f8f9fa;
+    }
+    
+    .explanation-box {
+        background-color: #e9ecef;
+        padding: 15px;
+        border-radius: 6px;
+        margin-top: 12px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="card mb-5">
+            <div class="card-header bg-primary text-white">
+                <h2 class="mb-0">Quiz Results</h2>
+            </div>
+            <div class="card-body">
+                <div class="score-container">
+                    <div class="score-circle 
+                        {% if session.score >= 80 %}score-high{% elif session.score >= 60 %}score-medium{% else %}score-low{% endif %}">
+                        {{ session.score|floatformat:0 }}%
+                    </div>
+                    
+                    <h3>
+                        {% if session.score >= 80 %}
+                            Excellent!
+                        {% elif session.score >= 60 %}
+                            Good job!
+                        {% else %}
+                            Keep practicing!
+                        {% endif %}
+                    </h3>
+                    
+                    <p>You answered {{ correct_count }} out of {{ response_count }} questions correctly.</p>
+                </div>
+                
+                <div class="row mb-4">
+                    <div class="col-md-8 mx-auto">
+                        <div class="progress" style="height: 25px;">
+                            <div class="progress-bar 
+                                {% if session.score >= 80 %}bg-success{% elif session.score >= 60 %}bg-warning{% else %}bg-danger{% endif %}"
+                                 role="progressbar" 
+                                 style="width: {{ session.score }}%" 
+                                 aria-valuenow="{{ session.score }}" 
+                                 aria-valuemin="0" 
+                                 aria-valuemax="100">
+                                {{ session.score|floatformat:0 }}%
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="feedback-message alert 
+                    {% if session.score >= 80 %}alert-success{% elif session.score >= 60 %}alert-info{% else %}alert-warning{% endif %}">
+                    
+                    {% if session.score >= 80 %}
+                        <h4><i class="bi bi-trophy"></i> Outstanding Performance!</h4>
+                        <p>You've demonstrated excellent understanding of this topic. Keep up the great work!</p>
+                    {% elif session.score >= 60 %}
+                        <h4><i class="bi bi-graph-up"></i> Good Progress!</h4>
+                        <p>You have a solid grasp of this material. With a bit more study, you'll master it.</p>
+                    {% else %}
+                        <h4><i class="bi bi-book"></i> Room for Improvement</h4>
+                        <p>This topic needs more of your attention. Review the material and try again.</p>
+                    {% endif %}
+                </div>
+                
+                <div class="d-flex justify-content-center mt-4">
+                    <a href="{% url 'quiz:topic_detail' session.topic.id %}" class="btn btn-primary me-2">Take Another Quiz</a>
+                    <a href="{% url 'quiz:topic_list' %}" class="btn btn-outline-primary">Back to Topics</a>
+                </div>
+            </div>
+        </div>
+        
+        <h3 class="mb-4">Question Review</h3>
+        
+        {% for response in responses %}
+            <div class="question-card card">
+                <div class="card-header {% if response.is_correct %}bg-success{% else %}bg-danger{% endif %} text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Question {{ forloop.counter }}</h5>
+                        <span>
+                            {% if response.is_correct %}
+                                <i class="bi bi-check-circle-fill"></i> Correct
+                            {% else %}
+                                <i class="bi bi-x-circle-fill"></i> Incorrect
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-body">
+                    <h5 class="card-title mb-4">{{ response.question.text }}</h5>
+                    
+                    {% for answer in response.question.answers.all %}
+                        <div class="answer-item
+                            {% if answer.is_correct %}
+                                answer-correct
+                            {% elif answer == response.selected_answer and not answer.is_correct %}
+                                answer-incorrect
+                            {% else %}
+                                answer-neutral
+                            {% endif %}">
+                            
+                            {{ answer.text }}
+                            
+                            {% if answer.is_correct %}
+                                <span class="badge bg-success float-end">Correct Answer</span>
+                            {% elif answer == response.selected_answer and not answer.is_correct %}
+                                <span class="badge bg-danger float-end">Your Answer</span>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                    
+                    {% if response.question.explanation %}
+                        <div class="explanation-box mt-3">
+                            <h6><i class="bi bi-info-circle"></i> Explanation</h6>
+                            {{ response.question.explanation }}
+                        </div>
+                    {% endif %}
+                    
+                    {% if not response.is_correct %}
+                        <div class="mt-3">
+                            <a href="#" class="btn btn-sm btn-outline-secondary">
+                                <i class="bi bi-bookmark-plus"></i> Add to Study List
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

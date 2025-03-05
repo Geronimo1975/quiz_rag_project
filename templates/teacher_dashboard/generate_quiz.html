@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block title %}Generate Quiz{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="mb-4">Generate Quiz Questions</h1>
+    
+    <div class="card">
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="mb-3">
+                    <label for="{{ form.document.id_for_label }}" class="form-label">Select Document</label>
+                    {{ form.document }}
+                    {% if form.document.errors %}
+                    <div class="invalid-feedback">
+                        {{ form.document.errors }}
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <div class="mb-3">
+                    <label for="{{ form.topic_name.id_for_label }}" class="form-label">Topic Name</label>
+                    {{ form.topic_name }}
+                    {% if form.topic_name.errors %}
+                    <div class="invalid-feedback">
+                        {{ form.topic_name.errors }}
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <div class="mb-3">
+                    <label for="{{ form.question_count.id_for_label }}" class="form-label">Number of Questions (20-100)</label>
+                    {{ form.question_count }}
+                    {% if form.question_count.errors %}
+                    <div class="invalid-feedback">
+                        {{ form.question_count.errors }}
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <div class="mb-3">
+                    <div class="form-check">
+                        {{ form.use_openai }}
+                        <label class="form-check-label" for="{{ form.use_openai.id_for_label }}">
+                            Use OpenAI for better quality questions
+                        </label>
+                        <div class="form-text">{{ form.use_openai.help_text }}</div>
+                    </div>
+                </div>
+                
+                <div class="mb-3" id="api-key-field" style="display: none;">
+                    <label for="{{ form.api_key.id_for_label }}" class="form-label">OpenAI API Key</label>
+                    {{ form.api_key }}
+                    {% if form.api_key.errors %}
+                    <div class="invalid-feedback">
+                        {{ form.api_key.errors }}
+                    </div>
+                    {% endif %}
+                    <div class="form-text">{{ form.api_key.help_text }}</div>
+                </div>
+                
+                <div class="mb-3">
+                    <div class="alert alert-info">
+                        <strong>Note:</strong> Generating questions may take several minutes depending on the document size and question count.
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">Generate Questions</button>
+                <a href="{% url 'teacher_dashboard:dashboard' %}" class="btn btn-secondary">Cancel</a>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const useOpenAICheckbox = document.getElementById('{{ form.use_openai.id_for_label }}');
+        const apiKeyField = document.getElementById('api-key-field');
+        
+        function toggleApiKeyField() {
+            if (useOpenAICheckbox.checked) {
+                apiKeyField.style.display = 'block';
+            } else {
+                apiKeyField.style.display = 'none';
+            }
+        }
+        
+        useOpenAICheckbox.addEventListener('change', toggleApiKeyField);
+        toggleApiKeyField();
+    });
+</script>
+{% endblock %}
+{% endblock %}

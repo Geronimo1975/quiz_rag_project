@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Question{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="mb-4">Edit Question</h1>
+    
+    <form method="post">
+        {% csrf_token %}
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h2 class="h4 mb-0">Question Text</h2>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label for="question_text" class="form-label">Question</label>
+                    <textarea class="form-control" id="question_text" name="question_text" rows="3" required>{{ question.text }}</textarea>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="explanation" class="form-label">Explanation</label>
+                    <textarea class="form-control" id="explanation" name="explanation" rows="3">{{ question.explanation }}</textarea>
+                    <div class="form-text">Explain why the correct answer is right (shown after answering)</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h2 class="h4 mb-0">Answer Options</h2>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    Select one option as the correct answer
+                </div>
+                
+                {% for answer in answers %}
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                <div class="mb-3">
+                                    <label for="answer_text_{{ answer.id }}" class="form-label">
+                                        Answer Option {{ forloop.counter }}
+                                    </label>
+                                    <textarea class="form-control" id="answer_text_{{ answer.id }}" 
+                                            name="answer_text_{{ answer.id }}" rows="2" required>{{ answer.text }}</textarea>
+                                </div>
+                            </div>
+                            <div class="col-md-4 text-center">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="is_correct" 
+                                           id="is_correct_{{ answer.id }}" value="{{ answer.id }}" 
+                                           {% if answer.is_correct %}checked{% endif %} required>
+                                    <label class="form-check-label" for="is_correct_{{ answer.id }}">
+                                        Correct Answer
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <div class="d-flex justify-content-between">
+            <a href="{% url 'teacher_dashboard:view_document' question.topic.document_set.first.id %}" class="btn btn-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

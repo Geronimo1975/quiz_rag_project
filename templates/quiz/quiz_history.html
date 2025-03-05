@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}Quiz History{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Your Quiz History</h1>
+
+{% if sessions %}
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Topic</th>
+                <th>Date</th>
+                <th>Score</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for session in sessions %}
+                <tr>
+                    <td>{{ session.topic.name }}</td>
+                    <td>{{ session.start_time }}</td>
+                    <td>
+                        {% if session.score %}
+                            <span class="badge {% if session.score < 50 %}bg-danger{% elif session.score < 80 %}bg-warning{% else %}bg-success{% endif %}">
+                                {{ session.score|floatformat:1 }}%
+                            </span>
+                        {% else %}
+                            <span class="badge bg-secondary">Incomplete</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if session.score %}
+                            <a href="{% url 'quiz:quiz_result' session.id %}" class="btn btn-sm btn-outline-primary">View Results</a>
+                        {% else %}
+                            <a href="{% url 'quiz:quiz_question' session.id 0 %}" class="btn btn-sm btn-outline-warning">Continue</a>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <div class="alert alert-info">
+        You haven't taken any quizzes yet.
+    </div>
+    <a href="{% url 'quiz:topic_list' %}" class="btn btn-primary">Take a Quiz</a>
+{% endif %}
+{% endblock %}

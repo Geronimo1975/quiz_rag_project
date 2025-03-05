@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Quiz RAG System - Home{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 text-center">
+        <h1 class="display-4 mb-4">Welcome to Quiz RAG System</h1>
+        <p class="lead">Generate and take quizzes based on your documents.</p>
+        
+        <div class="row mt-5">
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h3><i class="bi bi-file-earmark-text"></i></h3>
+                        <h5 class="card-title">Upload Documents</h5>
+                        <p>Upload PDF documents to generate quizzes.</p>
+                        <a href="/" class="btn btn-primary">Upload Now</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h3><i class="bi bi-question-circle"></i></h3>
+                        <h5 class="card-title">Take Quizzes</h5>
+                        <p>Test your knowledge with interactive quizzes.</p>
+                        <a href="/" class="btn btn-primary">Start Quiz</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h3><i class="bi bi-graph-up"></i></h3>
+                        <h5 class="card-title">Track Progress</h5>
+                        <p>Monitor your learning progress over time.</p>
+                        <a href="/" class="btn btn-primary">View Progress</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

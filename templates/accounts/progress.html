@@ -1,0 +1,182 @@
+{% extends "base.html" %}
+
+{% block title %}Learning Progress{% endblock %}
+
+{% block extra_css %}
+<style>
+    .progress-card {
+        margin-bottom: 20px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    
+    .topic-header {
+        padding: 15px;
+        border-bottom: 1px solid rgba(0,0,0,0.1);
+    }
+    
+    .proficiency-meter {
+        height: 15px;
+        border-radius: 30px;
+    }
+    
+    .weak-area-tag {
+        background-color: #ffeaea;
+        color: #dc3545;
+        border: 1px solid #ffd2d2;
+        border-radius: 20px;
+        padding: 5px 12px;
+        margin-right: 5px;
+        margin-bottom: 5px;
+        display: inline-block;
+    }
+    
+    .strong-area-tag {
+        background-color: #e8f6e8;
+        color: #28a745;
+        border: 1px solid #c3e6cb;
+        border-radius: 20px;
+        padding: 5px 12px;
+        margin-right: 5px;
+        margin-bottom: 5px;
+        display: inline-block;
+    }
+    
+    .stat-box {
+        text-align: center;
+        border-right: 1px solid #dee2e6;
+        padding: 10px;
+    }
+    
+    .stat-box:last-child {
+        border-right: none;
+    }
+    
+    .stat-value {
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+    
+    .stat-label {
+        font-size: 0.8rem;
+        color: #6c757d;
+    }
+    
+    .no-progress-message {
+        padding: 40px;
+        text-align: center;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1>Your Learning Progress</h1>
+    </div>
+    <div class="col-md-4 text-end">
+        <a href="{% url 'quiz:topic_list' %}" class="btn btn-primary">
+            <i class="bi bi-play-fill"></i> Take a Quiz
+        </a>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 stat-box">
+                        <div class="stat-value">{{ total_quizzes }}</div>
+                        <div class="stat-label">QUIZZES COMPLETED</div>
+                    </div>
+                    <div class="col-md-3 stat-box">
+                        <div class="stat-value">{{ avg_score|floatformat:1 }}%</div>
+                        <div class="stat-label">AVERAGE SCORE</div>
+                    </div>
+                    <div class="col-md-3 stat-box">
+                        <div class="stat-value">{{ total_questions }}</div>
+                        <div class="stat-label">QUESTIONS ANSWERED</div>
+                    </div>
+                    <div class="col-md-3 stat-box">
+                        <div class="stat-value">{{ topics_studied }}</div>
+                        <div class="stat-label">TOPICS STUDIED</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if progress %}
+    <h3 class="mb-3">Topic Proficiency</h3>
+    
+    <div class="row">
+        {% for item in progress %}
+            <div class="col-md-6">
+                <div class="card progress-card">
+                    <div class="topic-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">{{ item.topic }}</h5>
+                        <span class="badge {% if item.proficiency_level >= 80 %}bg-success{% elif item.proficiency_level >= 60 %}bg-warning{% else %}bg-danger{% endif %}">
+                            {{ item.proficiency_level|floatformat:0 }}%
+                        </span>
+                    </div>
+                    
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between mb-1">
+                                <small>Proficiency Level</small>
+                                <small>{{ item.proficiency_level|floatformat:0 }}%</small>
+                            </div>
+                            <div class="progress proficiency-meter">
+                                <div class="progress-bar 
+                                    {% if item.proficiency_level >= 80 %}bg-success{% elif item.proficiency_level >= 60 %}bg-warning{% else %}bg-danger{% endif %}" 
+                                     role="progressbar" 
+                                     style="width: {{ item.proficiency_level }}%" 
+                                     aria-valuenow="{{ item.proficiency_level }}" 
+                                     aria-valuemin="0" 
+                                     aria-valuemax="100"></div>
+                            </div>
+                        </div>
+                        
+                        {% if item.weak_areas %}
+                            <div class="mb-3">
+                                <h6>Areas for Improvement</h6>
+                                {% for area in item.weak_areas.split(',') %}
+                                    <div class="weak-area-tag">{{ area }}</div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        
+                        {% if item.strong_areas %}
+                            <div class="mb-3">
+                                <h6>Strong Areas</h6>
+                                {% for area in item.strong_areas.split(',') %}
+                                    <div class="strong-area-tag">{{ area }}</div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        
+                        <div class="mt-3">
+                            <small class="text-muted">Last updated: {{ item.last_updated|date:"M d, Y" }}</small>
+                        </div>
+                        
+                        <div class="mt-3">
+                            <a href="{% url 'quiz:topic_detail' item.topic_id %}" class="btn btn-sm btn-primary">Take Quiz</a>
+                            <button class="btn btn-sm btn-outline-secondary">View Details</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="card">
+        <div class="no-progress-message">
+            <i class="bi bi-graph-up" style="font-size: 48px; color: #6c757d;"></i>
+            <h3 class="mt-3">No Learning Progress Yet</h3>
+            <p class="text-muted">Take quizzes to start tracking your progress.</p>
+            <a href="{% url 'quiz:topic_list' %}" class="btn btn-primary mt-3">Start a Quiz</a>
+        </div>
+    </div>
+{% endif %}
+{% endblock %}

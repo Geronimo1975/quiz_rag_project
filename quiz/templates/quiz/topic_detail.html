@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}{{ topic.name }} - Quiz Details{% endblock %}
+
+{% block content %}
+<h1>{{ topic.name }}</h1>
+<p>{{ topic.description }}</p>
+
+<div class="quiz-details">
+    <h2>Start a New Quiz</h2>
+    <p>Test your knowledge on {{ topic.name }}.</p>
+    
+    {% if question_count >= 20 %}
+        <p>This quiz contains 20 randomly selected questions from a pool of {{ question_count }} total questions.</p>
+    {% else %}
+        <p>This quiz contains {{ question_count }} questions in total.</p>
+    {% endif %}
+    
+    {% if user.is_authenticated %}
+        <a href="{% url 'quiz:start_quiz' topic.slug %}" class="btn btn-primary">Start Quiz</a>
+    {% else %}
+        <p>Please <a href="/admin/login/?next=/quiz/topic/{{ topic.slug }}/">log in</a> to take this quiz.</p>
+    {% endif %}
+</div>
+
+<a href="{% url 'quiz:topic_list' %}" class="btn">Back to Topics</a>
+{% endblock %}

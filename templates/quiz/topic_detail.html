@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}{{ topic.name }} Quizzes{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">{{ topic.name }}</h1>
+<p>{{ topic.description }}</p>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h5 class="card-title">Start a New Quiz</h5>
+        <p class="card-text">Test your knowledge on {{ topic.name }}.</p>
+        
+        {% if question_count > 0 %}
+            <p>This quiz contains {{ question_count }} questions in total.</p>
+            <a href="{% url 'quiz:start_quiz' topic.id %}" class="btn btn-primary">Start Quiz</a>
+        {% else %}
+            <div class="alert alert-warning">
+                No questions available for this topic yet.
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+{% if previous_sessions %}
+    <h3 class="mt-4 mb-3">Previous Attempts</h3>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Score</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for session in previous_sessions %}
+                <tr>
+                    <td>{{ session.start_time }}</td>
+                    <td>
+                        {% if session.score %}
+                            {{ session.score|floatformat:1 }}%
+                        {% else %}
+                            <span class="text-muted">Incomplete</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if session.score %}
+                            <a href="{% url 'quiz:quiz_result' session.id %}" class="btn btn-sm btn-outline-primary">View Results</a>
+                        {% else %}
+                            <a href="{% url 'quiz:quiz_question' session.id 0 %}" class="btn btn-sm btn-outline-warning">Continue</a>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Your Profile{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Edit Profile</h3>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="bio" class="form-label">Bio</label>
+                        <textarea name="bio" id="bio" class="form-control" rows="4">{{ profile.bio }}</textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="preferred_topics" class="form-label">Preferred Topics</label>
+                        <input type="text" name="preferred_topics" id="preferred_topics" class="form-control" 
+                              value="{{ profile.preferred_topics }}" placeholder="e.g. Python, Django, AI">
+                        <div class="form-text">Separate topics with commas</div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Learning Progress</h3>
+            </div>
+            <div class="card-body">
+                <p>View your learning progress across different topics.</p>
+                <a href="{% url 'accounts:progress' %}" class="btn btn-outline-primary">View Progress</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

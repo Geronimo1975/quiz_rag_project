@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}Topic Not Available{% endblock %}
+
+{% block content %}
+<div class="alert alert-warning">
+    <h2>Topic Not Available</h2>
+    <p>The topic "{{ topic.name }}" is currently not active.</p>
+    <p>Please check back later or choose another topic.</p>
+</div>
+
+<a href="{% url 'quiz:topic_list' %}" class="btn btn-primary">Back to Topics</a>
+{% endblock %}

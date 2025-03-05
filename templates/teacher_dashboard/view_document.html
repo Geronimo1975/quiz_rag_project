@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}{{ document.title }}{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="mb-4">{{ document.title }}</h1>
+    
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h2 class="h4 mb-0">Document Details</h2>
+                </div>
+                <div class="card-body">
+                    <p><strong>Topic:</strong> {{ document.topic }}</p>
+                    <p><strong>Uploaded:</strong> {{ document.uploaded_at }}</p>
+                    <p><strong>Uploaded By:</strong> {{ document.user.username }}</p>
+                    
+                    {% if document.description %}
+                    <p><strong>Description:</strong> {{ document.description }}</p>
+                    {% endif %}
+                    
+                    <div class="mt-3">
+                        <a href="{{ document.file.url }}" class="btn btn-primary" target="_blank">View PDF</a>
+                        <a href="{% url 'teacher_dashboard:generate_quiz' %}?document={{ document.id }}" class="btn btn-success">Generate Quiz</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h2 class="h4 mb-0">Generated Questions</h2>
+                </div>
+                <div class="card-body">
+                    <p><strong>Topic:</strong> {{ topic.name }}</p>
+                    <p><strong>Questions:</strong> {{ questions_count }}</p>
+                    <p><strong>Quiz Sessions:</strong> {{ sessions_count }}</p>
+                    
+                    <div class="mt-3">
+                        <a href="{% url 'teacher_dashboard:manage_topics' %}" class="btn btn-outline-primary">Manage Topic</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card">
+        <div class="card-header bg-info text-white">
+            <h2 class="h4 mb-0">Question List</h2>
+        </div>
+        <div class="card-body">
+            {% if questions %}
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Question</th>
+                            <th>Correct Answer</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for question in questions %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ question.text|truncatechars:70 }}</td>
+                            <td>
+                                {% for answer in question.answers.all %}
+                                    {% if answer.is_correct %}
+                                        {{ answer.text|truncatechars:40 }}
+                                    {% endif %}
+                                {% endfor %}
+                            </td>
+                            <td>
+                                <a href="{% url 'teacher_dashboard:edit_question' question.id %}" class="btn btn-sm btn-warning">
+                                    <i class="bi bi-pencil"></i> Edit
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p>No questions have been generated from this document yet.</p>
+            <a href="{% url 'teacher_dashboard:generate_quiz' %}?document={{ document.id }}" class="btn btn-success">Generate Questions Now</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
