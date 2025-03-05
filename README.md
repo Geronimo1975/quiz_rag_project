@@ -124,76 +124,6 @@ pip freeze > requirements.txt
 
 
 
-# Fix Admin Interface Error First
-
-Let's fix the syntax error in the user_repository.py file:
-
-```python
-from typing import List, Dict, Any, Optional
-from django.contrib.auth.models import User
-from accounts.models import UserProfile, LearningProgress
-
-class UserRepository:
-    @staticmethod
-    def get_user_profile(user_id: int) -> Optional[UserProfile]:
-        """Get user profile by user ID"""
-        try:
-            return UserProfile.objects.get(user_id=user_id)
-        except UserProfile.DoesNotExist:
-            return None
-    
-    @staticmethod
-    def create_user_profile(user_id: int, bio: str = '', preferred_topics: str = '') -> UserProfile:
-        """Create a user profile"""
-        user = User.objects.get(id=user_id)
-        profile = UserProfile(
-            user=user,
-            bio=bio,
-            preferred_topics=preferred_topics
-        )
-        profile.save()
-        return profile
-    
-    @staticmethod
-    def update_user_profile(user_id: int, bio: str, preferred_topics: str) -> UserProfile:
-        """Update user profile"""
-        profile, created = UserProfile.objects.get_or_create(user_id=user_id)
-        profile.bio = bio
-        profile.preferred_topics = preferred_topics
-        profile.save()
-        return profile
-    
-    @staticmethod
-    def get_learning_progress(user_id: int, topic: Optional[str] = None) -> List[LearningProgress]:
-        """Get user's learning progress"""
-        query = {'user_id': user_id}
-        if topic:
-            query['topic'] = topic
-        return list(LearningProgress.objects.filter(**query))
-    
-    @staticmethod
-    def update_learning_progress(
-        user_id: int, 
-        topic: str, 
-        proficiency_level: float,
-        weak_areas: Optional[str] = None,
-        strong_areas: Optional[str] = None
-    ) -> LearningProgress:
-        """Update learning progress"""
-        progress, created = LearningProgress.objects.get_or_create(
-            user_id=user_id,
-            topic=topic
-        )
-        
-        progress.proficiency_level = proficiency_level
-        if weak_areas is not None:
-            progress.weak_areas = weak_areas
-        if strong_areas is not None:
-            progress.strong_areas = strong_areas
-            
-        progress.save()
-        return progress
-```
 
 Next, let's temporarily modify the URLs to avoid import errors:
 
@@ -228,34 +158,26 @@ python manage.py createsuperuser
 python manage.py runserver
 ```
 
-# Next Steps - Implementing Quiz Features
-
-Once the admin interface is working, we'll implement these features:
-
-1. Progress tracking:
+ Progress tracking:
    - Add progress bar on quiz questions
    - Store quiz results in user profiles
    - Create learning progress visualization
 
-2. Timer for each question:
+ Timer for each question:
    - Add JavaScript countdown timer
    - Auto-submit when time runs out
 
-3. Interactive answer selection:
+ Interactive answer selection:
    - Make answers clickable without needing radio buttons
    - Highlight selected answers
 
-4. Detailed results at the end:
+ Detailed results at the end:
    - Show score with visual feedback
    - Display personalized feedback based on score
    - List correct/incorrect answers
 
-5. Question review:
+ Question review:
    - Show explanation for each question
    - Highlight correct and incorrect answers
    - Provide additional learning resources
 
-Let me know when you've fixed the admin interface and are ready to implement these features!
-=======
-# quiz_rag_project
->>>>>>> dde708721daf7cad34f4dc44fe317f7ebc02d152
