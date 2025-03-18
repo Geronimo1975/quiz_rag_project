@@ -8,6 +8,12 @@ from quiz.models import Topic, Question, Answer
 def generate_rag_quiz(document, topic_name, question_count=20):
     """Generate a quiz using RAG approach"""
     try:
+        # Create or get the topic first
+        topic, created = Topic.objects.get_or_create(
+            name=topic_name,
+            defaults={'description': f"Questions about {topic_name}"}
+        )
+        
         # Process document if needed
         from .document_loader import process_document
         if not document.is_processed:
