@@ -6,13 +6,16 @@ from quiz.models import Topic, Question, Answer
 
 def generate_rag_quiz(document, topic_name, question_count=20):
     """Generate a quiz using RAG approach"""
-    # Ensure document is processed
-    if not hasattr(document, 'is_processed') or not document.is_processed:
+    # Process document if needed
+    if not document.is_processed:
         from .document_loader import process_document
-        process_document(document)
+        process_document(document.id)
+        document.refresh_from_db()
     
-    # Get chunks from the document
+    # Get chunks and verify they exist
     chunks = DocumentChunk.objects.filter(document=document)
+    if not chunks.exists():
+        raise ValueError(f"No chunks found for document {document.id}. Document may not be properly processed.")
     
     # Create or get the topic
     topic, created = Topic.objects.get_or_create(
