@@ -30,7 +30,7 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-default-key-for-dev')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True  # Temporarily set to True for debugging
 
-ALLOWED_HOSTS = ['sudo-ai.com', 'www.sudo-ai.com', 'localhost', '127.0.0.1', 'quiz-rag.sudo-ai.com', '0.0.0.0', 'replit-domain.com'] #Added replit-domain.com - replace with your actual domain
+ALLOWED_HOSTS = ['sudo-ai.com', 'www.sudo-ai.com', 'localhost', '127.0.0.1', 'quiz-rag.sudo-ai.com', '0.0.0.0', '.replit.dev', '.picard.replit.dev']
 
 
 # Application definition
