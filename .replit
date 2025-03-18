@@ -1,0 +1,24 @@
+modules = ["nodejs-20", "python-3.12", "web", "bash"]
+run = "run"
+
+[nix]
+channel = "stable-24_05"
+
+[deployment]
+run = ["sh", "-c", "run"]
+
+[workflows]
+runButton = "Django Server"
+
+[[workflows.workflow]]
+name = "Django Server"
+author = 38573053
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "python manage.py migrate"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "python manage.py runserver 0.0.0.0:3000"
