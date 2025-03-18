@@ -18,17 +18,25 @@ def upload_document(request):
     if request.method == 'POST':
         form = DocumentUploadForm(request.POST, request.FILES)
         if form.is_valid():
-            # Save document
-            document = form.save()
-            
             try:
-                # Process document in background (in a real app, use Celery)
+                if 'file' not in request.FILES:
+                    messages.error(request, "No file was uploaded.")
+                    return render(request, 'rag/upload_document.html', {'form': form})
+                
+                uploaded_file = request.FILES['file']
+                if not uploaded_file.name.endswith('.pdf'):
+                    messages.error(request, "Only PDF files are allowed.")
+                    return render(request, 'rag/upload_document.html', {'form': form})
+                
+                document = form.save()
                 rag_service.process_document(document.id)
                 messages.success(request, f"Document '{document.title}' uploaded and processed successfully.")
                 return redirect('rag:document_list')
             except Exception as e:
-                messages.error(request, f"Error processing document: {str(e)}")
-                return redirect('rag:upload_document')
+                messages.error(request, f"Error during upload: {str(e)}")
+                return render(request, 'rag/upload_document.html', {'form': form})
+        else:
+            messages.error(request, "Please correct the errors below.")
     else:
         form = DocumentUploadForm()
     
