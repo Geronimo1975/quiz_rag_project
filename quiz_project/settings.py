@@ -32,6 +32,8 @@ DEBUG = True  # Temporarily set to True for debugging
 
 ALLOWED_HOSTS = ['sudo-ai.com', 'www.sudo-ai.com', 'localhost', '127.0.0.1', 'quiz-rag.sudo-ai.com', '0.0.0.0', '.replit.dev', '.picard.replit.dev']
 
+CSRF_TRUSTED_ORIGINS = ['https://*.replit.dev']
+
 
 # Application definition
 
