@@ -49,7 +49,8 @@ def document_list(request):
     return render(request, 'rag/document_list.html', {'documents': documents})
 
 @login_required
-def generate_quiz(request, document_id):
+def generate_quiz(request):
+    document_id = request.GET.get('document')
     document = get_object_or_404(Document, id=document_id)
     
     if request.method == 'POST':
