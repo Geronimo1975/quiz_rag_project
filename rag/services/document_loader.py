@@ -9,10 +9,8 @@ def process_document(document) -> int:
     """Process a document and create chunks. Returns number of chunks created."""
     try:
         # Get document instance
-        if isinstance(document, (str, UUID)):
+        if isinstance(document, (str, UUID, int)):
             document = Document.objects.get(id=document)
-        elif isinstance(document, int):
-            document = Document.objects.get(pk=document)
         elif not isinstance(document, Document):
             raise ValueError(f"Invalid document type: {type(document)}")
 
@@ -27,9 +25,9 @@ def process_document(document) -> int:
 
         # Read PDF content
         pdf_reader = PdfReader(document.file.path)
-        text_content = ""
-        for page in pdf_reader.pages:
-            text_content += page.extract_text()
+        text = ""
+        for page in pdf_reader:
+            text += page.extract_text()
 
         # Split text into chunks
         text_splitter = RecursiveCharacterTextSplitter(
@@ -37,14 +35,14 @@ def process_document(document) -> int:
             chunk_overlap=200,
             length_function=len,
         )
-        chunks = text_splitter.split_text(text_content)
+        chunks = text_splitter.split_text(text)
 
         # Save chunks
-        for i, chunk_content in enumerate(chunks):
+        for i, chunk_text in enumerate(chunks):
             DocumentChunk.objects.create(
                 document=document,
-                chunk_number=i,
-                content=chunk_content
+                chunk_number=i + 1,
+                content=chunk_text
             )
 
         # Mark document as processed
