@@ -29,8 +29,13 @@ def upload_document(request):
                     return render(request, 'rag/upload_document.html', {'form': form})
                 
                 document = form.save()
-                rag_service.process_document(document.id)
-                messages.success(request, f"Document '{document.title}' uploaded and processed successfully.")
+                try:
+                    rag_service.process_document(document.id)
+                    document.is_processed = True
+                    document.save()
+                    messages.success(request, f"Document '{document.title}' uploaded and processed successfully.")
+                except Exception as e:
+                    messages.error(request, f"Error processing document: {str(e)}")
                 return redirect('rag:document_list')
             except Exception as e:
                 messages.error(request, f"Error during upload: {str(e)}")
