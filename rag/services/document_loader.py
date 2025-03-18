@@ -1,15 +1,18 @@
 
-from typing import List
+from typing import List, Tuple
 from uuid import UUID
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from PyPDF2 import PdfReader
 from ..models import Document, DocumentChunk
 
-def process_document(document):
-    """Process a document and create chunks"""
+def process_document(document) -> int:
+    """Process a document and create chunks. Returns number of chunks created."""
     try:
         if isinstance(document, (str, UUID)):
             document = Document.objects.get(id=document)
+        
+        # Delete existing chunks
+        DocumentChunk.objects.filter(document=document).delete()
         
         # Read PDF content
         pdf_reader = PdfReader(document.file.path)
@@ -37,5 +40,9 @@ def process_document(document):
         document.is_processed = True
         document.save()
         
+        return len(chunks)
+        
     except Document.DoesNotExist:
-        raise ValueError(f"Document with ID {document_id} not found")
+        raise ValueError(f"Document {document} not found")
+    except Exception as e:
+        raise ValueError(f"Error processing document: {str(e)}")
