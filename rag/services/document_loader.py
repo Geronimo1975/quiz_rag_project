@@ -5,10 +5,11 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from PyPDF2 import PdfReader
 from ..models import Document, DocumentChunk
 
-def process_document(document_id: UUID) -> None:
+def process_document(document):
     """Process a document and create chunks"""
     try:
-        document = Document.objects.get(id=document_id)
+        if isinstance(document, (str, UUID)):
+            document = Document.objects.get(id=document)
         
         # Read PDF content
         pdf_reader = PdfReader(document.file.path)

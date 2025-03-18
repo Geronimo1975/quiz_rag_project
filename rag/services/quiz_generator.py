@@ -15,7 +15,12 @@ def generate_rag_quiz(document, topic_name, question_count=20):
     # Get chunks and verify they exist
     chunks = DocumentChunk.objects.filter(document=document)
     if not chunks.exists():
-        raise ValueError(f"No chunks found for document {document.id}. Document may not be properly processed.")
+        # Try processing document again
+        process_document(document)
+        document.refresh_from_db()
+        chunks = DocumentChunk.objects.filter(document=document)
+        if not chunks.exists():
+            raise ValueError(f"No chunks found for document {document.id}. Document may not be properly processed.")
     
     # Create or get the topic
     topic, created = Topic.objects.get_or_create(
