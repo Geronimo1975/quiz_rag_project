@@ -8,9 +8,20 @@ from ..models import Document, DocumentChunk
 def process_document(document) -> int:
     """Process a document and create chunks. Returns number of chunks created."""
     try:
+        # Get document instance
         if isinstance(document, (str, UUID)):
             document = Document.objects.get(id=document)
-        
+        elif isinstance(document, int):
+            document = Document.objects.get(id=document)
+        elif not isinstance(document, Document):
+            raise ValueError(f"Invalid document type: {type(document)}")
+            
+        if not document.file:
+            raise ValueError("No file associated with document")
+            
+        if not os.path.exists(document.file.path):
+            raise ValueError(f"File not found at {document.file.path}")
+
         # Delete existing chunks
         DocumentChunk.objects.filter(document=document).delete()
         
